@@ -124,13 +124,22 @@ function streamConnect(retryAttempt) {
               tweetContent = `🥳 The happy random winner for ${mainThread.user.id_str} raffle is @${winnerAccount.data.username}, Congratulations! \n https://twitter.com/${mainThread.user.screen_name}/status/${mainThread.user.id_str} 🥳`;
               await tweet(tweetContent);
             } else {
-              tweetContent = `Only tweet author can pick a winner, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
-              reply(mainThread.id_str, tweetContent);
+              if (!mainThread.full_text.includes("@GetRandomWinner")) {
+                tweetContent = `🥳 Only tweet author can pick a winner, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
+                reply(mainThread.id_str, tweetContent);
+              }
             }
           } else {
-            if (!mainThread.full_text.includes("@GetRandomWinner")) {
-              tweetContent = `🥳 Can't tweet that if author doesn't follow me, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
-              reply(mainThread.id_str, tweetContent);
+            if (sender === mainAuthor) {
+              if (!mainThread.full_text.includes("@GetRandomWinner")) {
+                tweetContent = `🥳 Can't tweet that if author doesn't follow me, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
+                reply(mainThread.id_str, tweetContent);
+              }
+            } else {
+              if (!mainThread.full_text.includes("@GetRandomWinner")) {
+                tweetContent = `🥳 Only tweet author can pick a winner, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
+                reply(mainThread.id_str, tweetContent);
+              }
             }
           }
         }
