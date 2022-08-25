@@ -22,7 +22,7 @@ const getTweetTest = async (id) => {
   console.log(res);
 };
 
-// getTweetTest("1562501108349939719");
+getTweetTest("1562501108349939719");
 
 const getRetweetedTest = async (id) => {
   const res = await getRetweeted(id);

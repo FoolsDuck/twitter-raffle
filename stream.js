@@ -95,9 +95,11 @@ function streamConnect(retryAttempt) {
         const json = JSON.parse(data);
         const myFollowers = await getUserFollowers("1562553200246681600");
         console.log(json);
+
         const thread = await getTweetById(json.data.id);
+        const sender = thread.user.id_str;
         const mainThread = await getTweetById(thread.in_reply_to_status_id_str);
-        const author = mainThread.user.id_str;
+        const mainAuthor = mainThread.user.id_str;
 
         // const participatns = await getRetweeted(mainThread.id_str);
         // if (participatns.length > 0) {
@@ -110,7 +112,7 @@ function streamConnect(retryAttempt) {
         //   await tweet(tweetContent);
         // }
 
-        const isFollower = myFollowers.includes(author);
+        const isFollower = myFollowers.includes(mainAuthor);
         let tweetContent;
         const participatns = await getRetweeted(mainThread.id_str);
         if (participatns.length > 0) {
@@ -118,8 +120,13 @@ function streamConnect(retryAttempt) {
             participatns[Math.floor(Math.random() * participatns.length)];
           const winnerAccount = await getUserById(winner);
           if (isFollower) {
-            tweetContent = `🥳 The happy random winner for ${mainThread.user.id_str} raffle is @${winnerAccount.data.username}, Congratulations! \n https://twitter.com/${mainThread.user.screen_name}/status/${mainThread.user.id_str} 🥳`;
-            await tweet(tweetContent);
+            if (sender === mainAuthor) {
+              tweetContent = `🥳 The happy random winner for ${mainThread.user.id_str} raffle is @${winnerAccount.data.username}, Congratulations! \n https://twitter.com/${mainThread.user.screen_name}/status/${mainThread.user.id_str} 🥳`;
+              await tweet(tweetContent);
+            } else {
+              tweetContent = `Only tweet author can pick a winner, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
+              reply(mainThread.id_str, tweetContent);
+            }
           } else {
             if (!mainThread.full_text.includes("@GetRandomWinner")) {
               tweetContent = `🥳 Can't tweet that if author doesn't follow me, but anyway the random winner could be @${winnerAccount.data.username}, follow me to randomly pick a winner for your raffle! \n https://twitter.com/GetRandomWinner/status/1562582872124706816/photo/1`;
